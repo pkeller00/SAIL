@@ -1,0 +1,66 @@
+# 4i spatial proteomics: unsupervised discovery of subcellular compartments
+# Paper: Section V-B, Fig. 4, Table I; Supplementary Section I, Tables IV, V, XI, Figs. 5-6.
+experiment: 4i
+seed: 0
+output_dir: outputs/4i
+
+data:
+  # squidpy.datasets.four_i(); downloaded on first use (~200 MB). Set to a local
+  # .h5ad path to avoid the download.
+  path: null
+  region_col: cluster          # expert compartment annotation (evaluation only)
+  pretrained: models/4i/sail_modes.pt   # used by `--stage eval` when no model was trained
+
+graph:
+  method: knn
+  k: 32
+  log_distances: true
+
+sail:                          # sail.ModesConfig (paper default configuration)
+  n_modes: 20
+  local_index: geary
+  objective: minimize
+  stiefel: true
+  f_affinity: null
+  reduce: mean
+  activation: identity
+  learnable_temperature: true
+  lambda_corr: 1.0
+  lambda_sparse: 1.0
+  lr: 0.05
+  epochs: 1000
+  batch_size: 1
+  scheduler: step
+  scheduler_step_size: 10
+  scheduler_gamma: 0.5
+
+eval:
+  mode_chunk: 2                # fields per local-index pass (memory only; results unchanged)
+  permutations: 1000           # LISA permutation null
+  alpha: 0.05                  # after Benjamini-Hochberg correction
+  figure_modes: [1, 8]         # modes shown in main-text Fig. 4 (1-based)
+
+baselines:
+  k: 32
+  log_distances: true
+  univariate_top_k: 20         # proteins with the highest global Moran's I
+  univariate_permutations: 1000
+  mean_permutations: 1000
+  permutations: 999            # MULTISPATI / Hotspot LISA
+  multispati_eig_frac: 0.80
+  hotspot_min_genes: 3
+
+# One-at-a-time ablation (Supplementary Table XI); every other setting stays at default.
+sweep:
+  lambda_corr: [0.0, 5.0, 10.0, 100.0]
+  lambda_sparse: [0.0, 0.1, 10.0, 100.0]
+  activation: [relu, sigmoid]
+  reduce: [max, sum]
+  stiefel: [false]
+  statistic:
+    - {local_index: moran, objective: maximize}
+    - {local_index: gstar, objective: maximize}
+  f_affinity: [query_key, shared_map]
+  learnable_temperature: [false]
+  k: [8, 16, 64]
+  lr: [0.01, 0.1]

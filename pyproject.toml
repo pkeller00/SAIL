@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sail"
+version = "1.0.0"
+description = "SAIL: a learnable generalisation of spatial autocorrelation over graph-structured data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "PolyForm-Noncommercial-1.0.0" }
+authors = [{ name = "Piotr Keller" }, { name = "Fayyaz Minhas" }]
+dependencies = [
+    "torch>=2.1",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "statsmodels",
+    "geotorch",
+    "matplotlib",
+    "pandas",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+spatial = ["anndata", "scanpy", "squidpy"]
+baselines = ["esda", "libpysal", "hotspotsc"]
+survival = ["lifelines"]
+gnn = ["torch_geometric"]
+wsi = ["tiatoolbox", "shapely"]
+dev = ["pytest", "ruff"]
+maps = ["geopandas"]
+all = ["sail[spatial,baselines,survival,gnn,maps,dev]"]
+
+[project.scripts]
+sail-run = "sail.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["sail*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["legacy: compares against the pre-release code (needs SAIL_LEGACY_PATH)"]
+
+[tool.ruff]
+line-length = 110

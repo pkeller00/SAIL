@@ -1,0 +1,51 @@
+# TCGA-CRC whole-slide images: patch graphs (UNI patch features), survival endpoint from datasets/tcga_crc (see README)
+# Paper: Section V-D, Fig. 6c; Supp. Tables VIII, XIV.
+experiment: tcga_crc
+seed: 0
+output_dir: outputs/tcga_crc
+
+data:
+  samples: data/tcga_crc/samples.pt      # datasets/tcga_crc/prepare.py
+  clinical: data/tcga_crc/clinical.csv
+  pretrained: models/tcga_crc/sail_modes.pt
+
+graph:
+  method: knn
+  k: 32
+  log_distances: true
+
+sail:
+  n_modes: 20
+  local_index: geary
+  objective: minimize
+  stiefel: true
+  f_affinity: null
+  reduce: mean
+  activation: identity
+  learnable_temperature: true
+  lambda_corr: 1.0
+  lambda_sparse: 1.0
+  lr: 0.05
+  epochs: 1000
+  batch_size: 16
+
+eval:
+  mode_chunk: 4
+  rmst_tau_days: 3650          # 10-year RMST horizon
+  top_features: 10
+  overlays: {mode: 1, n_patients: 3, coord_scale: 1.0, radius: 400}
+
+# One-at-a-time ablation; every other setting stays at default.
+sweep:
+  lambda_corr: [0.0, 5.0, 10.0, 100.0]
+  lambda_sparse: [0.0, 0.1, 10.0, 100.0]
+  activation: [relu, sigmoid]
+  reduce: [max, sum]
+  stiefel: [false]
+  statistic:
+    - {local_index: moran, objective: maximize}
+    - {local_index: gstar, objective: maximize}
+  f_affinity: [query_key, shared_map]
+  learnable_temperature: [false]
+  k: [8, 16, 64]
+  lr: [0.01, 0.1]

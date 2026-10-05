@@ -1,0 +1,29 @@
+# Computational scaling of SAIL. Paper: Supplementary Section F, Table I, Figs. 1-2.
+# Reported numbers: one NVIDIA A100-SXM4-80GB, PyTorch 2.5.1, CUDA 12.4, FP32 (TF32 disabled).
+experiment: compute_scaling
+seed: 0
+output_dir: outputs/compute_scaling
+
+# Unsupervised mode learning, Moran-style objective (h and the map are set per run)
+sail:
+  local_index: moran
+  objective: maximize
+  lambda_corr: 8.0
+  lambda_sparse: 5.0
+  lr: 0.05
+  batch_size: 1
+
+eval:
+  reference: {n: 100000, d: 1000, h: 25, k: 16}
+  sweeps:
+    n: [1000, 3000, 10000, 30000, 100000, 300000, 1000000, 3000000, 10000000]
+    d: [50, 100, 300, 1000, 3000, 10000]
+    h: [1, 5, 10, 25, 50, 100]
+    k: [4, 8, 16, 32, 64]
+  repeats: 5
+  warmup: 3
+  steps_per_repeat: 10
+  max_repeat_seconds: 3.0
+  fit_epochs: 100
+  fit_repeats: 3
+  fit_max_n: 300000

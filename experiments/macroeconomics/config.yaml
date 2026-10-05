@@ -1,0 +1,33 @@
+# Global Macro Database: spatio-temporal SAIL Modes over 145 countries, 2000-2023
+# Paper: Section V-F, Fig. 8; Supplementary Section N, Figs. 10-11.
+experiment: macroeconomics
+seed: 0
+output_dir: outputs/macroeconomics
+
+data:
+  panel: data/macroeconomics/panel.csv          # datasets/macroeconomics/prepare.py
+  shapefile: data/macroeconomics/ne_110m_admin_0_countries.shp   # for the maps
+  pretrained: models/macroeconomics/sail_modes.pt
+
+# One graph per year; great-circle kNN between country centroids (raw angular distances).
+graph:
+  method: knn
+  k: 6
+  metric: haversine
+  log_distances: false
+
+sail:
+  n_modes: 8
+  local_index: geary
+  objective: minimize
+  stiefel: true
+  reduce: mean
+  lambda_corr: 1.0
+  lambda_sparse: 1.0
+  lr: 0.05
+  epochs: 1000
+  batch_size: 1
+
+eval:
+  figure_mode: 2               # export-openness mode shown in Fig. 8 (1-based)
+  map_years: [2000, 2009, 2023]

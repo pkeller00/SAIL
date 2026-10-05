@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use SAIL, please cite the paper below."
+title: "SAIL: A Learnable Generalisation of Spatial Autocorrelation over Graph-Structured Data"
+authors:
+  - family-names: Keller
+    given-names: Piotr
+    affiliation: University of Warwick
+  - family-names: Minhas
+    given-names: Fayyaz
+    affiliation: University of Warwick
+repository-code: "https://github.com/pkeller00/SAIL"
+license: "PolyForm-Noncommercial-1.0.0"
+preferred-citation:
+  type: article
+  title: "SAIL: A Learnable Generalisation of Spatial Autocorrelation over Graph-Structured Data"
+  authors:
+    - family-names: Keller
+      given-names: Piotr
+    - family-names: Minhas
+      given-names: Fayyaz
+  journal: "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  status: submitted

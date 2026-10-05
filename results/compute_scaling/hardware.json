@@ -1,0 +1,54 @@
+{
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "gpu_mem_gb": 79.249755859375,
+  "cpu": "x86_64",
+  "cpu_threads": 256,
+  "ram_gb": 2015.1302185058594,
+  "torch": "2.5.1+cu124",
+  "cuda": "12.4",
+  "python": "3.10.19",
+  "tf32_matmul": false,
+  "n_repeats": 5,
+  "n_warmup": 3,
+  "steps_per_repeat": 10,
+  "fit_epochs": 100,
+  "fit_repeats": 3,
+  "ref": {
+    "N": 100000,
+    "D": 1000,
+    "K": 25,
+    "k": 16
+  },
+  "variants": {
+    "linear": [
+      false,
+      null,
+      "Linear"
+    ],
+    "ortho": [
+      true,
+      null,
+      "Ortho (default)"
+    ],
+    "linear_shared": [
+      false,
+      "SharedFMapTheta",
+      "Linear + SharedFMap \u03b8"
+    ],
+    "ortho_shared": [
+      true,
+      "SharedFMapTheta",
+      "Ortho + SharedFMap \u03b8"
+    ],
+    "linear_qk": [
+      false,
+      "QKTheta",
+      "Linear + QK \u03b8"
+    ],
+    "ortho_qk": [
+      true,
+      "QKTheta",
+      "Ortho + QK \u03b8"
+    ]
+  }
+}

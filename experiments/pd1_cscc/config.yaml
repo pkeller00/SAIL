@@ -1,0 +1,69 @@
+# cSCC PD-1/PD-L1 blockade response (CosMx): unsupervised SAIL niches vs response
+# Paper: Section V-C, Table II, Fig. 5; Supplementary Section J, Tables VI, XII, Fig. 7.
+experiment: pd1_cscc
+seed: 0
+output_dir: outputs/pd1_cscc
+
+data:
+  path: data/pd1_cscc/pd1_cSCC_labelled.h5ad   # see datasets/pd1_cscc/README.md
+  pretrained: models/pd1_cscc/sail_modes.pt
+  timepoints: [Baseline]          # pre-treatment biopsies
+  positive: Responder
+  negative: NonResponder
+  subject_col: Subject_STUDY_ID
+  core_col: TMA_ID
+  time_col: Biopsy_Timepoint
+  niche_col: SpatialClusterNames
+  pdl1_col: Baseline_PDL1
+  coords_cols: [x_slide_mm, y_slide_mm]  # used if obsm["spatial"] is missing
+  # quality control (applied in this order)
+  gene_min_cells: 10
+  cell_min_counts: 100
+  core_min_cells: 50
+  max_zscore: 10                  # z-scored log1p-normalised genes, clipped above
+
+graph:
+  method: knn
+  k: 32
+  log_distances: true
+
+sail:
+  n_modes: 20
+  local_index: geary
+  objective: minimize
+  stiefel: true
+  f_affinity: null
+  reduce: mean
+  activation: identity
+  learnable_temperature: true
+  lambda_corr: 1.0
+  lambda_sparse: 1.0
+  lr: 0.05
+  epochs: 1000
+  batch_size: 1
+
+eval:
+  mode_chunk: 4                   # fields per local-index pass (memory only)
+  n_bootstrap: 10000              # subject-level bootstrap for the AUC CI
+  figure_mode: 18                 # 1-based mode shown in Fig. 5
+  top_genes: 15
+  # published biomarkers (Lee et al.), computed on the unfiltered cohort as in the original study
+  favourable_niches:
+    - B/plasma cell enriched niche
+    - Inflammatory keratinocyte niche
+    - High antigen presentation niche
+
+# Supplementary Table XII
+sweep:
+  lambda_corr: [0.0, 5.0, 10.0, 100.0]
+  lambda_sparse: [0.0, 0.1, 10.0, 100.0]
+  activation: [relu, sigmoid]
+  reduce: [max, sum]
+  stiefel: [false]
+  statistic:
+    - {local_index: moran, objective: maximize}
+    - {local_index: gstar, objective: maximize}
+  f_affinity: [query_key, shared_map]
+  learnable_temperature: [false]
+  k: [8, 16, 64]
+  lr: [0.01, 0.1]

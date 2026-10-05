@@ -1,0 +1,15 @@
+# data and run outputs (see datasets/ for how to obtain the data)
+data/
+outputs/
+*.h5ad
+*.npy
+
+# python
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+.ruff_cache/
+third_party/

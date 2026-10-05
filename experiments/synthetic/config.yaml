@@ -1,0 +1,65 @@
+# Synthetic experiments. Paper: Section V-A, Figs. 2-3; Supplementary Sections G, H, Tables II-III.
+experiment: synthetic
+seed: 0
+output_dir: outputs/synthetic
+
+# SAIL Modes used by the toy graphs (one Moran mode, unconstrained map, 50 epochs)
+sail:
+  n_modes: 1
+  local_index: moran
+  objective: maximize
+  stiefel: false
+  lambda_corr: 0.0
+  lambda_sparse: 0.0
+  lr: 0.05
+  epochs: 50
+  batch_size: 1
+
+eval:
+  index:                       # Fig. 2
+    n_random: 100
+    grid_size: 16
+    k: 4
+  toys:                        # Supp. Fig. 4a
+    # kNN graph as used for the published figure. A rook (4-neighbour) graph,
+    # {method: radius, radius: <grid spacing>}, cannot make binary patterns
+    # significant: with 4 neighbours the permutation p-value is >= ~1/8.
+    graph: {method: knn, k: 32, log_distances: true}
+    perlin_size: 32
+    perlin_res: 8
+    checker_size: 16
+    plateau_size: 40
+    rings_size: 50
+  terrain:                     # Supp. Fig. 4b
+    size: 200
+    perlin_res: 8
+    k: 32
+    permutations: 199
+  regression:                  # Fig. 3, Supp. Table II
+    data:
+      x_dim: 8
+      k_true: 32               # generating kNN neighbourhood (hidden from every model)
+      weight_lengthscale: 0.6  # RBF edge weights of the target
+      gp_lengthscale: [0.15, 1.2]
+      mix_rank: 3
+      min_nodes: 30
+      max_nodes: 80
+      n_train: 600
+      n_val: 250
+      n_test: 600
+    hidden_grid: [8, 16, 32, 64]
+    heads_grid: [1, 2, 4]
+    tie_margin: 0.01
+    lr: 0.01
+    max_epochs: 30
+    patience: 10
+    sweep_seed: 0
+    seeds_file: experiments/synthetic/eval_seeds.json   # the paper's 1000 evaluation seeds
+    n_seeds: 1000
+  blend:                       # Supp. Table III
+    n_seeds: 10
+    gammas: [0.0, 0.15, 0.3, 0.5, 0.7, 0.85, 1.0]
+    hidden: 8
+    heads: 2
+    content_seed: 12345        # fixed content direction v_feat
+    models: ["SAIL (dense)", "GCN (X+coords, FC)", "GAT (X+coords, FC)", "MLP (X+coords)"]

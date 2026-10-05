@@ -1,0 +1,18 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[baselines,survival,dev]" anndata
+      - name: Lint
+        run: ruff check sail experiments datasets tests --select E,F,W --ignore E501,E402
+      - name: Test
+        run: MPLBACKEND=Agg pytest -q

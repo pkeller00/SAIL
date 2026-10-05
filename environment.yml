@@ -1,0 +1,14 @@
+# conda env create -f environment.yml && conda activate sail && pip install -e ".[all]"
+name: sail
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pytorch=2.5.1
+  - pytorch-cuda=12.4      # remove for a CPU-only install
+  - pip
+  - geopandas              # macroeconomics maps
+  - pip:
+      - torch_geometric

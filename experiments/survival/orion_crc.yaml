@@ -1,0 +1,42 @@
+# ORION-CRC multiplexed immunofluorescence: cell graphs, 17 markers, overall survival
+# Paper: Section V-D, Table III, Fig. 6a; Supp. Tables VII, IX.
+experiment: orion_crc
+seed: 0
+output_dir: outputs/orion_crc
+
+data:
+  samples: data/orion_crc/samples.pt    # datasets/orion_crc/prepare.py
+  clinical: data/orion_crc/clinical.csv
+  pretrained: models/orion_crc/sail_modes.pt
+
+# The paper model was trained on raw (not log-transformed) kNN distances.
+graph:
+  method: knn
+  k: 32
+  log_distances: false
+
+sail:
+  n_modes: 20
+  local_index: geary
+  objective: minimize
+  stiefel: true
+  f_affinity: null
+  reduce: mean
+  activation: identity
+  learnable_temperature: true
+  lambda_corr: 1.0
+  lambda_sparse: 0.1           # the default (1.0) collapses each mode onto one marker here
+  lr: 0.1
+  epochs: 1000
+  batch_size: 1
+
+eval:
+  mode_chunk: 2
+  rmst_tau_days: 3650
+  top_features: 10
+  overlays: {mode: 17, n_patients: 3, coord_scale: 1.0, radius: 20}
+
+baselines:
+  k: 32                        # fixed inverse-distance kNN weights on raw distances
+  multispati_eig_frac: 0.80
+  hotspot_min_genes: 3

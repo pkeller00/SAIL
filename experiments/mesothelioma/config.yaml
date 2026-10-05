@@ -1,0 +1,37 @@
+# Mesothelioma subtyping (MesoGraph St George cohort): supervised SAIL vs MesoGraph / MIL
+# Paper: Section V-E, Table IV, Fig. 7; Supplementary Section M.
+experiment: mesothelioma
+seed: 0
+output_dir: outputs/mesothelioma
+
+data:
+  graphs: data/mesothelioma/st_george_hospital/graphs   # MesoGraph per-core .pkl graphs
+  splits: experiments/mesothelioma/splits.json          # shared folds (paper); `--stage splits` regenerates
+  mesograph_repo: third_party/MesoGraph                  # git clone https://github.com/measty/MesoGraph
+  pretrained_dir: models/mesothelioma                    # sail_fold<k>.pt
+
+graph:
+  method: knn
+  k: 8
+  log_distances: true
+
+model:                           # sail.supervised.SAILPredictor
+  n_heads: 16                    # SAIL Heads (projected fields)
+  n_outputs: 2                   # epithelioid head, non-epithelioid head
+  local_index: geary
+  query_key_dim: 16
+  reduce: mean
+  learnable_temperature: true
+
+train:
+  epochs: 300
+  lr: 5.0e-5
+  weight_decay: 0.02
+  batch_size: 16
+  margin: 0.8                    # pairwise ranking loss (MesoGraph)
+  val_frac: 0.25
+
+eval:
+  n_bootstrap: 10000
+  baselines: [mesograph, pins, max_mil]   # Table IV comparators (naive_mil also available)
+  interpret_fold: 1
