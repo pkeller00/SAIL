@@ -13,10 +13,7 @@ SAIL can be used
 * **unsupervised**: discover *SAIL Modes*, feature combinations that are
   maximally spatially coherent, then map them with LISA-style hotspot tests;
 * **supervised**: as a backbone whose global descriptors feed a prediction head.
-
-> P. Keller and F. Minhas, *SAIL: A Learnable Generalisation of Spatial
-> Autocorrelation over Graph-Structured Data*, IEEE TPAMI (submitted).
-
+* 
 ## Installation
 
 ```bash
