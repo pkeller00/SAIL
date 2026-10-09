@@ -1,14 +1,15 @@
-# conda env create -f environment.yml && conda activate sail && pip install -e ".[all]"
+# micromamba create -f environment.yml && micromamba activate sail && pip install -e ".[all]"
 name: sail
 channels:
-  - pytorch
-  - nvidia
   - conda-forge
 dependencies:
   - python=3.10
-  - pytorch=2.5.1
-  - pytorch-cuda=12.4      # remove for a CPU-only install
   - pip
   - geopandas              # macroeconomics maps
+  - ffmpeg                 # diffusion MP4 animations (conda-forge build includes libx264)
+  - icu=75                 # without this pin, geopandas + ffmpeg make the solver hang
   - pip:
+      # CUDA 12.4 wheels; use https://download.pytorch.org/whl/cpu for a CPU-only install
+      - --extra-index-url https://download.pytorch.org/whl/cu124
+      - torch==2.5.1
       - torch_geometric

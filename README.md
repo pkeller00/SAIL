@@ -18,14 +18,16 @@ SAIL can be used
 
 ```bash
 git clone https://github.com/pkeller00/SAIL.git && cd SAIL
-conda env create -f environment.yml && conda activate sail
+micromamba create -f environment.yml && micromamba activate sail
 pip install -e ".[all]"      # or just `pip install -e .` for the core library
 ```
 
 Optional extras: `spatial` (AnnData/squidpy), `baselines` (esda, libpysal,
 Hotspot), `survival` (lifelines), `gnn` (PyTorch Geometric), `wsi`
 (tiatoolbox), `maps` (geopandas). A GPU is recommended for large graphs but
-not required.
+not required. The diffusion experiment writes MP4s with ffmpeg + libx264
+(installed by `environment.yml`; outside conda, use a system ffmpeg built with
+libx264). If ffmpeg isn't found, the animations are saved as GIFs instead.
 
 ## Quick start
 

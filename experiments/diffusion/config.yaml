@@ -1,0 +1,51 @@
+# Diffusion of two gases: SAIL tracks the loss of spatial autocorrelation as two
+# hard-disc gases mix, and recovers the diffusion coefficient.
+experiment: diffusion
+seed: 0
+output_dir: outputs/diffusion
+
+# Hard-disc gas: equal masses, perfectly elastic particle-particle, wall and partition collisions.
+# Species red = +1 (left half), blue = -1 (right half). Lengths in px, times in s.
+data:
+  box: [1000, 540]
+  n_particles: 600
+  radius: 4
+  speed: 100                   # rms particle speed
+  temperature_ratio: 1.0       # T_left / T_right; != 1 also makes speed spatially coherent (heat diffusion)
+  margin: 20                   # empty strip at the walls and partition at t = 0
+  dt: 0.02                     # sub-stepped so no particle moves more than 0.75 R per sub-step
+  duration: 80
+  snapshot_every: 0.25
+  hole_size: 120
+  scenarios: [closed, hole, open]   # partition kept / small hole opened / partition removed at t = 0
+  seeds: [1, 2, 3, 4, 5]            # evaluation runs per scenario
+  train_seed: 0                     # separate 'open' run used to learn the SAIL mode
+  n_noise: 4                        # nuisance features (i.i.d. N(0, 1) per particle and snapshot)
+
+graph: {method: knn, k: 8, log_distances: true}
+
+# One learned Moran mode over [species, speed, noise...]
+sail:
+  n_modes: 1
+  local_index: moran
+  objective: maximize
+  stiefel: false
+  lambda_corr: 0.0
+  lambda_sparse: 0.01
+  lr: 0.05
+  epochs: 200
+  batch_size: 8
+  patience: 20
+
+eval:
+  train_every: 4               # use every 4th snapshot of the training run
+  lisa_permutations: 199
+  snapshot_times: [0, 2, 5, 10, 20, 40]
+  msd_window: [1.0, 4.0]       # lag window (s) of the MSD fit for D
+  profile_bins: 10             # x-bins of the species profile <c^2>
+  dpi: 600
+  video:
+    scenarios: [open, hole]
+    seed: 1
+    fps: 24
+    dpi: 150
